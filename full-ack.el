@@ -25,6 +25,12 @@
 ;;
 ;;; Commentary:
 ;;
+;; Add the following to your .emacs:
+;;
+;; (add-to-list 'load-path "/path/to/full-ack")
+;; (autoload 'ack-same "full-ack" nil t)
+;; (autoload 'ack "full-ack" nil t)
+;;
 ;;; Change Log:
 ;;
 ;;    Initial release.
