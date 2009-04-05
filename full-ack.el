@@ -268,7 +268,9 @@ used without confirmation."
   "A function to guess the project root directory.
 This can be used in `ack-root-directory-functions'."
   (catch 'root
-    (let ((dir (file-name-directory buffer-file-name))
+    (let ((dir (expand-file-name (if buffer-file-name
+                                     (file-name-directory buffer-file-name)
+                                   default-directory)))
           (pattern (mapconcat 'identity ack-project-root-file-patterns "\\|")))
       (while (not (equal dir "/"))
         (when (directory-files dir nil pattern t)
