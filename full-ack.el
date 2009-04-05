@@ -38,6 +38,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Fixed regexp toggling.
+;;
 ;; 2009-04-05 (0.1)
 ;;    Initial release.
 ;;
@@ -322,19 +324,19 @@ This can be used in `ack-root-directory-functions'."
 (defsubst ack-option (name enabled)
   (format "--%s%s" (if enabled "" "no") name))
 
-(defun ack-arguments-from-options ()
+(defun ack-arguments-from-options (regexp)
   (let ((arguments (list "--color"
                          (ack-option "smart-case" (eq ack-ignore-case 'smart))
                          (ack-option "heading" ack-heading)
                          (ack-option "env" ack-use-environment))))
     (unless ack-ignore-case
       (push "-i" arguments))
-    (unless ack-search-regexp
+    (unless regexp
       (push "--literal" arguments))
     (push (format "--context=%d" ack-context) arguments)
     arguments))
 
-(defun ack-run (directory &rest arguments)
+(defun ack-run (directory regexp &rest arguments)
   "Run ack in DIRECTORY with ARGUMENTS."
   (ack-abort)
   (setq directory
@@ -342,7 +344,7 @@ This can be used in `ack-root-directory-functions'."
             (file-name-as-directory (expand-file-name directory))
           default-directory))
   (setq arguments (append ack-arguments
-                          (nconc (ack-arguments-from-options)
+                          (nconc (ack-arguments-from-options regexp)
                                  arguments)))
   (let ((buffer (get-buffer-create ack-buffer-name))
         (inhibit-read-only t)
@@ -429,7 +431,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 `ack-project-root-file-patterns'.  The user is only prompted, if
 `ack-prompt-for-directory' is set."
   (interactive (ack-interactive))
-  (ack-run directory "--all-types" pattern))
+  (ack-run directory regexp "--all-types" pattern))
 
 ;;; text utilities ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
