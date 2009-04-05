@@ -134,7 +134,8 @@ directory is verified by the user depending on `ack-promtp-for-directory'."
   :type '(repeat function))
 
 (defcustom ack-project-root-file-patterns
-  '(".project\\'" ".xcodeproj\\'" ".sln\\'" "\\`Project.ede\\'")
+  '(".project\\'" ".xcodeproj\\'" ".sln\\'" "\\`Project.ede\\'"
+    "\\`.git\\'" "\\`.bzr\\'" "\\`_darcs\\'" "\\`.hg\\'")
   "A list of project file patterns for `ack-guess-project-root'.
 Each element is a regular expression.  If a file matching either element is
 found in a directory, that directory is assumed to be the project root by
