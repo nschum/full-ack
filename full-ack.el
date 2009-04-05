@@ -54,17 +54,25 @@
   :type '(repeat (string)))
 
 (defcustom ack-mode-type-alist nil
-  "*Matches major modes to searched files.
+  "*Matches major modes to searched file types.
 This overrides values in `ack-mode-default-type-alist'.  The car in each
-list element is a major mode, the cdr is either a string, which represents
-the --type argument given to `ack', or a list of file extensions that
-`ack-same' uses."
+list element is a major mode, the cdr is a string, which represents
+the --type argument used by `ack-same'."
   :group 'full-ack
   :type '(repeat (cons (symbol :tag "Major mode")
                        (choice (string :tag "ack type")
-                               (repeat :tag "File extensions"
-                                       (string :tag "extension"))
                                (const :tag "Search all" nil)))))
+
+(defcustom ack-mode-extension-alist nil
+  "*Matches major modes to searched file extensions.
+This overrides values in `ack-mode-default-extension-alist'.  The car in
+each list element is a major mode, the rest is a list of file extensions
+that that should be searched in addition to the type defined in
+`ack-mode-type-alist' by `ack-same'."
+  :group 'full-ack
+  :type '(repeat (cons (symbol :tag "Major mode")
+                       (repeat :tag "File extensions"
+                               (string :tag "extension")))))
 
 (defcustom ack-ignore-case 'smart
   "*Determines whether `ack' ignores the search case.
@@ -168,7 +176,6 @@ used without confirmation."
     (batch-file-mode . "batch")
     (c++-mode . "cpp")
     (c-mode . "cc")
-    (d-mode "d")
     (cfmx-mode . "cfmx")
     (cperl-mode . "perl")
     (csharp-mode . "csharp")
@@ -215,18 +222,25 @@ used without confirmation."
     (yaml-mode . "yaml"))
   "Default values for `ack-mode-type-alist', which see.")
 
+(defconst ack-mode-default-extension-alist
+  '((d-mode "d"))
+  "Default values for `ack-mode-extension-alist', which see.")
+
 (defun ack-type-for-major-mode (mode)
   "Return the --type and --type-set arguments for major mode MODE."
-  (let ((match (cdr (or (assoc mode ack-mode-type-alist)
-                        (assoc mode ack-mode-default-type-alist)))))
-    (when match
-      (if (stringp match)
-          (list "--type" match)
-        (list "--type-set"
-              (concat "full-ack-type=" (mapconcat 'identity match ","))
-              "--type" "full-ack-type")))))
-
-(ack-type-for-major-mode major-mode)
+  (let ((type (cdr (or (assoc mode ack-mode-type-alist)
+                       (assoc mode ack-mode-default-type-alist))))
+        (ext (cdr (or (assoc mode ack-mode-extension-alist)
+                      (assoc mode ack-mode-default-extension-alist)))))
+    (if ext
+        (if type
+            (list "--type-add" (concat type "=" (mapconcat 'identity ext ","))
+                  "--type" type)
+          (setq type "full-ack-custom-type")
+          (list "--type-set" (concat type "=" (mapconcat 'identity ext ","))
+                "--type" type))
+      (when type
+        (list "--type" type)))))
 
 ;;; root ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
