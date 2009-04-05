@@ -283,9 +283,10 @@ This can be used in `ack-root-directory-functions'."
   (when (eq (process-status proc) 'exit)
     (with-current-buffer (process-buffer proc)
       (let ((c (ack-count-matches)))
-        (and (eq ack-display-buffer 'after)
-             (> c 0)
-             (display-buffer (current-buffer)))
+        (if (> c 0)
+            (when (eq ack-display-buffer 'after)
+              (display-buffer (current-buffer)))
+          (kill-buffer (current-buffer)))
         (message "Ack finished with %d match%s" c (if (eq c 1) "" "es"))))))
 
 (defun ack-filter (proc output)
