@@ -357,6 +357,14 @@ This can be used in `ack-root-directory-functions'."
     (set-process-query-on-exit-flag ack-process nil)
     (set-process-filter ack-process 'ack-filter)))
 
+(defun ack-version-string ()
+  "Return the ack version string."
+  (with-temp-buffer
+    (call-process ack-executable nil t nil "--version")
+    (goto-char (point-min))
+    (re-search-forward " +")
+    (buffer-substring (point) (point-at-eol))))
+
 ;;; commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar ack-directory-history nil
