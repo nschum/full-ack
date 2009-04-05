@@ -267,11 +267,9 @@ This can be used in `ack-root-directory-functions'."
   (catch 'root
     (let ((dir (file-name-directory buffer-file-name)))
       (while (not (equal dir "/"))
-        (let (match)
-          (dolist (pattern ack-project-root-file-patterns)
-            (setq match (directory-files dir nil pattern t))
-            (when match
-              (throw 'root dir))))
+        (dolist (pattern ack-project-root-file-patterns)
+          (when (directory-files dir nil pattern t)
+            (throw 'root dir)))
         (setq dir (file-name-directory (directory-file-name dir)))))))
 
 ;;; process ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
