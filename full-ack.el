@@ -36,8 +36,12 @@
 ;;
 ;; `next-error' and `previous-error' can be used to jump to the matches.
 ;;
+;; `ack-find-file' and `ack-find-same-file' use ack to list the files in the
+;; current project.  It's a convenient, though slow, way of finding files.
+;;
 ;;; Change Log:
 ;;
+;;    Added `ack-list-files', `ack-find-file' and `ack-find-same-file'.
 ;;    Fixed regexp toggling.
 ;;
 ;; 2009-04-05 (0.1)
@@ -374,6 +378,19 @@ This can be used in `ack-root-directory-functions'."
     (re-search-forward " +")
     (buffer-substring (point) (point-at-eol))))
 
+(defun ack-list-files (directory &rest arguments)
+  (with-temp-buffer
+    (let ((default-directory directory))
+      (when (eq 0 (apply 'call-process ack-executable nil t nil "-f" "--print0"
+                         arguments))
+        (goto-char (point-min))
+        (let ((beg (point-min))
+              files)
+          (while (re-search-forward "\0" nil t)
+            (push (buffer-substring beg (match-beginning 0)) files)
+            (setq beg (match-end 0)))
+          files)))))
+
 ;;; commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar ack-directory-history nil
@@ -401,6 +418,11 @@ This can be used in `ack-root-directory-functions'."
               (read-directory-name "Directory: " dir dir t)
             dir))))
 
+(defun ack-type ()
+  (or (ack-type-for-major-mode major-mode)
+      (when buffer-file-name
+        (ack-create-type (list (file-name-extension buffer-file-name))))))
+
 ;;;###autoload
 (defun ack-same (pattern &optional regexp directory)
   "Run ack with --type matching the current `major-mode'.
@@ -414,11 +436,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 `ack-project-root-file-patterns'.  The user is only prompted, if
 `ack-prompt-for-directory' is set."
   (interactive (ack-interactive))
-  (let ((type (ack-type-for-major-mode major-mode)))
-    (unless type
-      (setq type
-            (when buffer-file-name
-              (ack-create-type (list (file-name-extension buffer-file-name))))))
+  (let ((type (ack-type)))
     (if type
         (apply 'ack-run directory (append type (list pattern)))
       (ack pattern regexp directory))))
@@ -434,6 +452,40 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 `ack-prompt-for-directory' is set."
   (interactive (ack-interactive))
   (ack-run directory regexp pattern))
+
+(defun ack-read-file (prompt choices)
+  (if ido-mode
+      (ido-completing-read prompt choices nil t)
+    (require 'iswitchb)
+    (with-no-warnings
+      (let ((iswitchb-make-buflist-hook
+             (lambda () (setq iswitchb-temp-buflist choices))))
+        (iswitchb-read-buffer prompt nil t)))))
+
+;;;###autoload
+(defun ack-find-same-file (&optional directory)
+  "Prompt to find a file found by ack in DIRECTORY."
+  (interactive (let ((dir (run-hook-with-args-until-success
+                           'ack-root-directory-functions)))
+                 (list (if ack-prompt-for-directory
+                           (read-directory-name "Directory: " dir dir t)
+                         dir))))
+  (find-file (expand-file-name
+              (ack-read-file "Find file: "
+                             (apply 'ack-list-files directory (ack-type)))
+              directory)))
+
+;;;###autoload
+(defun ack-find-file (&optional directory)
+  "Prompt to find a file found by ack in DIRECTORY."
+  (interactive (let ((dir (run-hook-with-args-until-success
+                           'ack-root-directory-functions)))
+                 (list (if ack-prompt-for-directory
+                           (read-directory-name "Directory: " dir dir t)
+                         dir))))
+  (find-file (expand-file-name (ack-read-file "Find file: "
+                                              (ack-list-files directory))
+                               directory)))
 
 ;;; text utilities ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
