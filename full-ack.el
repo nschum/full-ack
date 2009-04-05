@@ -224,6 +224,11 @@ used without confirmation."
   '((d-mode "d"))
   "Default values for `ack-mode-extension-alist', which see.")
 
+(defun ack-create-type (extensions)
+  (list "--type-set"
+        (concat "full-ack-custom-type=" (mapconcat 'identity extensions ","))
+        "--type" "full-ack-custom-type"))
+
 (defun ack-type-for-major-mode (mode)
   "Return the --type and --type-set arguments for major mode MODE."
   (let ((types (cdr (or (assoc mode ack-mode-type-alist)
@@ -239,9 +244,7 @@ used without confirmation."
             `("--type-add" ,(concat (car types)
                                     "=" (mapconcat 'identity ext ","))
               . ,result)
-          (list "--type-set" (concat "full-ack-custom-type="
-                                     (mapconcat 'identity ext ","))
-                "--type" "full-ack-custom-type"))
+          (ack-create-type ext))
       result)))
 
 ;;; root ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -377,6 +380,9 @@ This can be used in `ack-root-directory-functions'."
 ;;;###autoload
 (defun ack-same (pattern &optional regexp directory)
   "Run ack with --type matching the current `major-mode'.
+The types of files searched are determined by `ack-mode-type-alist' and
+`ack-mode-extension-alist'.  If no type is configured the buffer's file
+extension is used for the search.
 PATTERN is interpreted as a regular expression, iff REGEXP is non-nil.  If
 called interactively, the value of REGEXP is determined by `ack-search-regexp'.
 A prefix arg toggles that value.
@@ -385,6 +391,10 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 `ack-prompt-for-directory' is set."
   (interactive (ack-interactive))
   (let ((type (ack-type-for-major-mode major-mode)))
+    (unless type
+      (setq type
+            (when buffer-file-name
+              (ack-create-type (list (file-name-extension buffer-file-name))))))
     (if type
         (apply 'ack-run directory (append type (list pattern)))
       (ack pattern regexp directory))))
