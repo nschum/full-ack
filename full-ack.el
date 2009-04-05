@@ -433,7 +433,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 `ack-project-root-file-patterns'.  The user is only prompted, if
 `ack-prompt-for-directory' is set."
   (interactive (ack-interactive))
-  (ack-run directory regexp "--all-types" pattern))
+  (ack-run directory regexp pattern))
 
 ;;; text utilities ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
