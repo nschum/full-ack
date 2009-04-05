@@ -286,7 +286,7 @@ This can be used in `ack-root-directory-functions'."
         (and (eq ack-display-buffer 'after)
              (> c 0)
              (display-buffer (current-buffer)))
-        (message "Ack finished with %d matches" c)))))
+        (message "Ack finished with %d match%s" c (if (eq c 1) "" "es"))))))
 
 (defun ack-filter (proc output)
   (let ((buffer (process-buffer proc))
