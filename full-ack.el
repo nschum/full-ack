@@ -585,7 +585,9 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 
 (define-derived-mode ack-mode nil "ack"
   "Major mode for ack output."
-  (set (make-local-variable 'font-lock-keywords-only) t)
+  font-lock-defaults
+  (setq font-lock-defaults
+        (list ack-font-lock-keywords t))
   (set (make-local-variable 'font-lock-extra-managed-props)
        '(mouse-face follow-link ack-line ack-file ack-marker ack-match))
   (make-local-variable 'overlay-arrow-position)
@@ -596,8 +598,6 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 
   (setq next-error-function 'ack-next-error-function
         ack-error-pos nil))
-
-(font-lock-add-keywords 'ack-mode ack-font-lock-keywords)
 
 (provide 'full-ack)
 ;;; full-ack.el ends here
