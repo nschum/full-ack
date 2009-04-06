@@ -41,6 +41,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Added 'unless-guessed value for `ack-prompt-for-directory'.
 ;;    Added `ack-list-files', `ack-find-file' and `ack-find-same-file'.
 ;;    Fixed regexp toggling.
 ;;
@@ -149,12 +150,14 @@ found in a directory, that directory is assumed to be the project root by
   :group 'full-ack
   :type '(repeat (string :tag "Regular expression")))
 
-(defcustom ack-prompt-for-directory t
+(defcustom ack-prompt-for-directory nil
   "*Determines whether `ack' asks the user for the root directory.
-If this is disabled, the value determined by `ack-root-directory-functions' is
-used without confirmation."
+If this is 'unless-guessed, the value determined by
+`ack-root-directory-functions' is used without confirmation.  If it is
+nil, the directory is never confirmed."
   :group 'full-ack
   :type '(choice (const :tag "Don't prompt" nil)
+                 (const :tag "Don't Prompt when guessed " unless-guessed)
                  (const :tag "Prompt" t)))
 
 ;;; faces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -408,8 +411,12 @@ This can be used in `ack-root-directory-functions'."
 (defun ack-read-dir ()
   (let ((dir (run-hook-with-args-until-success 'ack-root-directory-functions)))
     (if ack-prompt-for-directory
-        (read-directory-name "Directory: " dir dir t)
-      dir)))
+        (if (and dir (eq ack-prompt-for-directory 'unless-guessed))
+            dir
+          (read-directory-name "Directory: " dir dir t))
+      (or dir
+          (and buffer-file-name (file-name-directory buffer-file-name))
+          default-directory))))
 
 (defsubst ack-xor (a b)
   (if a (not b) b))
