@@ -405,18 +405,21 @@ This can be used in `ack-root-directory-functions'."
                         nil nil nil
                         (if regexp 'ack-regexp-history 'ack-literal-history)))
 
+(defun ack-read-dir ()
+  (let ((dir (run-hook-with-args-until-success 'ack-root-directory-functions)))
+    (if ack-prompt-for-directory
+        (read-directory-name "Directory: " dir dir t)
+      dir)))
+
 (defsubst ack-xor (a b)
   (if a (not b) b))
 
 (defun ack-interactive ()
   "Return the (interactive) arguments for `ack' and `ack-same'"
-  (let ((regexp (ack-xor current-prefix-arg ack-search-regexp))
-        (dir (run-hook-with-args-until-success 'ack-root-directory-functions)))
+  (let ((regexp (ack-xor current-prefix-arg ack-search-regexp)))
     (list (ack-read regexp)
           regexp
-          (if ack-prompt-for-directory
-              (read-directory-name "Directory: " dir dir t)
-            dir))))
+          (ack-read-dir))))
 
 (defun ack-type ()
   (or (ack-type-for-major-mode major-mode)
@@ -465,11 +468,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 ;;;###autoload
 (defun ack-find-same-file (&optional directory)
   "Prompt to find a file found by ack in DIRECTORY."
-  (interactive (let ((dir (run-hook-with-args-until-success
-                           'ack-root-directory-functions)))
-                 (list (if ack-prompt-for-directory
-                           (read-directory-name "Directory: " dir dir t)
-                         dir))))
+  (interactive (list (ack-read-dir)))
   (find-file (expand-file-name
               (ack-read-file "Find file: "
                              (apply 'ack-list-files directory (ack-type)))
@@ -478,11 +477,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 ;;;###autoload
 (defun ack-find-file (&optional directory)
   "Prompt to find a file found by ack in DIRECTORY."
-  (interactive (let ((dir (run-hook-with-args-until-success
-                           'ack-root-directory-functions)))
-                 (list (if ack-prompt-for-directory
-                           (read-directory-name "Directory: " dir dir t)
-                         dir))))
+  (interactive (list (ack-read-dir)))
   (find-file (expand-file-name (ack-read-file "Find file: "
                                               (ack-list-files directory))
                                directory)))
