@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x
@@ -41,6 +41,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2009-04-06 (0.2)
 ;;    Added 'unless-guessed value for `ack-prompt-for-directory'.
 ;;    Added `ack-list-files', `ack-find-file' and `ack-find-same-file'.
 ;;    Fixed regexp toggling.
