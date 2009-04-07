@@ -43,6 +43,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Fixed mouse clicking.
+;;
 ;; 2009-04-06 (0.2)
 ;;    Added 'unless-guessed value for `ack-prompt-for-directory'.
 ;;    Added `ack-list-files', `ack-find-file' and `ack-find-same-file'.
@@ -593,20 +595,23 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 
 (defun ack-find-match (pos)
   "Jump to the match at POS."
-  (interactive "d")
-  (let ((marker (get-text-property pos 'ack-marker))
-        (msg (copy-marker (ack-property-beg pos 'ack-match)))
-        (msg-end (ack-property-end pos 'ack-match))
-        (compilation-context-lines ack-context)
-        (inhibit-read-only t)
-        end)
-    (unless (and marker (marker-buffer marker))
-      (setq marker (ack-create-marker msg msg-end t))
-      (add-text-properties msg msg-end (list 'ack-marker marker)))
-    (setq end (copy-marker (+ marker (ack-visible-distance msg msg-end))))
-    (compilation-goto-locus msg marker end)
-    (set-marker msg nil)
-    (set-marker end nil)))
+  (interactive (list (let ((posn (event-start last-input-event)))
+                       (set-buffer (window-buffer (posn-window posn)))
+                       (posn-point posn))))
+  (when (setq pos (ack-property-beg pos 'ack-match))
+    (let ((marker (get-text-property pos 'ack-marker))
+          (msg (copy-marker pos))
+          (msg-end (ack-property-end pos 'ack-match))
+          (compilation-context-lines ack-context)
+          (inhibit-read-only t)
+          end)
+      (unless (and marker (marker-buffer marker))
+        (setq marker (ack-create-marker msg msg-end t))
+        (add-text-properties msg msg-end (list 'ack-marker marker)))
+      (setq end (copy-marker (+ marker (ack-visible-distance msg msg-end))))
+      (compilation-goto-locus msg marker end)
+      (set-marker msg nil)
+      (set-marker end nil))))
 
 ;;; ack-mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
