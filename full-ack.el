@@ -621,23 +621,23 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     ;; file and maybe line
     ("^\\(\33\\[1;..m\\)\\(.*?\\)\\(\33\\[0m\\)\\([:-]\\([0-9]+\\)[:-]\\)?"
      (1 '(face nil invisible t))
-     (2 `(face 'ack-file
+     (2 `(face ack-file
           ack-file ,(match-string-no-properties 2)))
      (3 '(face nil invisible t))
-     (5 `(face 'ack-line
+     (5 `(face ack-line
           ack-line ,(match-string-no-properties 5))
         nil 'optional))
     ;; lines
     ("^\\([0-9]+\\)[:-]"
-     (1 `(face 'ack-line
+     (1 `(face ack-line
           ack-line ,(match-string-no-properties 1))))
     ;; matches
     ("\\(\33\\[30;..m\\)\\(.*?\\)\\(\33\\[0m\\)"
      (1 '(face nil invisible t))
-     (0 `(face 'ack-match
+     (0 `(face ack-match
           ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
           ack-match t
-          mouse-face 'highlight
+          mouse-face highlight
           follow-link t))
      (3 '(face nil invisible t)))
     ;; noise
