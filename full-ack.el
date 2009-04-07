@@ -43,7 +43,7 @@
 ;;
 ;;; Change Log:
 ;;
-;;    Fixed mouse clicking.
+;;    Fixed mouse clicking and let it move next-error position.
 ;;
 ;; 2009-04-06 (0.2)
 ;;    Added 'unless-guessed value for `ack-prompt-for-directory'.
@@ -561,16 +561,9 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defun ack-next-error-function (arg reset)
   (when (or reset (null ack-error-pos))
     (setq ack-error-pos (point-min)))
-  (setq ack-error-pos
-        (if (<= arg 0)
-            (ack-previous-error (- arg))
-          (ack-next-error arg)))
-  (let ((bol (save-excursion (goto-char ack-error-pos) (point-at-bol))))
-    (if overlay-arrow-position
-        (move-marker overlay-arrow-position bol)
-      (setq overlay-arrow-position (copy-marker bol))))
-
-  (ack-find-match ack-error-pos))
+  (ack-find-match (if (<= arg 0)
+                      (ack-previous-error (- arg))
+                    (ack-next-error arg))))
 
 (defun ack-create-marker (pos end &optional force)
   (let ((file (ack-previous-property-value 'ack-file pos))
@@ -605,6 +598,13 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
           (compilation-context-lines ack-context)
           (inhibit-read-only t)
           end)
+      (setq ack-error-pos pos)
+
+      (let ((bol (save-excursion (goto-char pos) (point-at-bol))))
+        (if overlay-arrow-position
+            (move-marker overlay-arrow-position bol)
+          (setq overlay-arrow-position (copy-marker bol))))
+
       (unless (and marker (marker-buffer marker))
         (setq marker (ack-create-marker msg msg-end t))
         (add-text-properties msg msg-end (list 'ack-marker marker)))
