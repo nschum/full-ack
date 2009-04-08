@@ -597,7 +597,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
           (msg-end (ack-property-end pos 'ack-match))
           (compilation-context-lines ack-context)
           (inhibit-read-only t)
-          end)
+          (end (make-marker)))
       (setq ack-error-pos pos)
 
       (let ((bol (save-excursion (goto-char pos) (point-at-bol))))
@@ -608,7 +608,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
       (unless (and marker (marker-buffer marker))
         (setq marker (ack-create-marker msg msg-end t))
         (add-text-properties msg msg-end (list 'ack-marker marker)))
-      (setq end (copy-marker (+ marker (ack-visible-distance msg msg-end))))
+      (set-marker end (+ marker (ack-visible-distance msg msg-end))
+                  (marker-buffer marker))
       (compilation-goto-locus msg marker end)
       (set-marker msg nil)
       (set-marker end nil))))
