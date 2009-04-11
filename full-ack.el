@@ -43,6 +43,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Added `ack-next-match' and `ack-previous-match'.
 ;;    Fixed mouse clicking and let it move next-error position.
 ;;
 ;; 2009-04-06 (0.2)
@@ -537,33 +538,35 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defvar ack-error-pos nil)
 (make-variable-buffer-local 'ack-error-pos)
 
-(defun ack-next-error (arg)
-  (let ((pos ack-error-pos))
-    (setq arg (* 2 arg))
-    (unless (get-text-property pos 'ack-match)
-      (setq arg (1- arg)))
-    (assert (> arg 0))
-    (dotimes (i arg)
-      (setq pos (next-single-property-change pos 'ack-match))
-      (unless pos
-        (error "Moved past last match")))
-    pos))
+(defun ack-next-match (pos arg)
+  (interactive "d\np")
+  (setq arg (* 2 arg))
+  (unless (get-text-property pos 'ack-match)
+    (setq arg (1- arg)))
+  (assert (> arg 0))
+  (dotimes (i arg)
+    (setq pos (next-single-property-change pos 'ack-match))
+    (unless pos
+      (error "Moved past last match")))
+  (goto-char pos)
+  pos)
 
-(defun ack-previous-error (arg)
-  (let ((pos ack-error-pos))
-    (assert (> arg 0))
-    (dotimes (i (* 2 arg))
-      (setq pos (previous-single-property-change pos 'ack-match))
-      (unless pos
-        (error "Moved back before first match")))
-    pos))
+(defun ack-previous-match (pos arg)
+  (interactive "d\np")
+  (assert (> arg 0))
+  (dotimes (i (* 2 arg))
+    (setq pos (previous-single-property-change pos 'ack-match))
+    (unless pos
+      (error "Moved back before first match")))
+  (goto-char pos)
+  pos)
 
 (defun ack-next-error-function (arg reset)
   (when (or reset (null ack-error-pos))
     (setq ack-error-pos (point-min)))
   (ack-find-match (if (<= arg 0)
-                      (ack-previous-error (- arg))
-                    (ack-next-error arg))))
+                      (ack-previous-match ack-error-pos (- arg))
+                    (ack-next-match ack-error-pos arg))))
 
 (defun ack-create-marker (pos end &optional force)
   (let ((file (ack-previous-property-value 'ack-file pos))
@@ -620,6 +623,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap [mouse-2] 'ack-find-match)
     (define-key keymap "\C-m" 'ack-find-match)
+    (define-key keymap "n" 'ack-next-match)
+    (define-key keymap "p" 'ack-previous-match)
     keymap))
 
 (defvar ack-font-lock-keywords
