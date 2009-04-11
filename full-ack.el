@@ -454,7 +454,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   (interactive (ack-interactive))
   (let ((type (ack-type)))
     (if type
-        (apply 'ack-run directory (append type (list pattern)))
+        (apply 'ack-run directory regexp (append type (list pattern)))
       (ack pattern regexp directory))))
 
 ;;;###autoload
