@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.2
+;; Version: 0.2.1
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x
@@ -43,6 +43,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2009-04-13 (0.2.1)
 ;;    Added `ack-next-match' and `ack-previous-match'.
 ;;    Fixed mouse clicking and let it move next-error position.
 ;;
