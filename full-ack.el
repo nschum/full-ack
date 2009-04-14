@@ -25,6 +25,10 @@
 ;;
 ;;; Commentary:
 ;;
+;; ack is a tool like grep, aimed at programmers with large trees of
+;; heterogeneous source code.
+;; It is aailable at <http://betterthangrep.com/>.
+;;
 ;; Add the following to your .emacs:
 ;;
 ;; (add-to-list 'load-path "/path/to/full-ack")
