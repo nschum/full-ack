@@ -240,7 +240,6 @@ nil, the directory is never confirmed."
     (ruby-mode "ruby")
     (scheme-mode "scheme")
     (shell-script-mode "shell")
-    (skipped-mode "skipped")
     (smalltalk-mode "smalltalk")
     (sql-mode "sql")
     (tcl-mode "tcl")
