@@ -215,6 +215,7 @@ nil, the directory is never confirmed."
     (emacs-lisp-mode "elisp")
     (erlang-mode "erlang")
     (espresso-mode "js")
+    (f90-mode "fortran")
     (fortran-mode "fortran")
     (haskell-mode "haskell")
     (hexl-mode "binary")
