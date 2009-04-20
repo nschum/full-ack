@@ -47,6 +47,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Made `ack-guess-project-root' Windows friendly.
+;;
 ;; 2009-04-13 (0.2.1)
 ;;    Added `ack-next-match' and `ack-previous-match'.
 ;;    Fixed mouse clicking and let it move next-error position.
@@ -289,11 +291,13 @@ This can be used in `ack-root-directory-functions'."
     (let ((dir (expand-file-name (if buffer-file-name
                                      (file-name-directory buffer-file-name)
                                    default-directory)))
+          (prev-dir nil)
           (pattern (mapconcat 'identity ack-project-root-file-patterns "\\|")))
-      (while (not (equal dir "/"))
+      (while (not (equal dir prev-dir))
         (when (directory-files dir nil pattern t)
           (throw 'root dir))
-        (setq dir (file-name-directory (directory-file-name dir)))))))
+        (setq prev-dir dir
+              dir (file-name-directory (directory-file-name dir)))))))
 
 ;;; process ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
