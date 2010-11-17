@@ -642,17 +642,20 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 
 (defvar ack-font-lock-keywords
   `(("^--" . 'ack-separator)
-    ;; file and maybe line
+    ;; file and line
     (,(concat "^" ack-font-lock-regexp-color-fg-begin
               "\\(.*?\\)" ack-font-lock-regexp-color-end
-              "\\([:-]\\([0-9]+\\)[:-]\\)?")
+              "[:-]\\([0-9]+\\)[:-]")
      (1 '(face nil invisible t))
-     (2 `(face ack-file
-          ack-file ,(match-string-no-properties 2)))
+     (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
      (3 '(face nil invisible t))
-     (5 `(face ack-line
-          ack-line ,(match-string-no-properties 5))
-        nil 'optional))
+     (4 `(face ack-line ack-line ,(match-string-no-properties 4))))
+    ;; file
+    (,(concat "^" ack-font-lock-regexp-color-fg-begin
+              "\\(.*?\\)" ack-font-lock-regexp-color-end "$")
+     (1 '(face nil invisible t))
+     (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
+     (3 '(face nil invisible t)))
     ;; lines
     ("^\\([0-9]+\\)[:-]"
      (1 `(face ack-line
