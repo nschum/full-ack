@@ -47,6 +47,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Made changes for ack 1.92.
 ;;    Made `ack-guess-project-root' Windows friendly.
 ;;
 ;; 2009-04-13 (0.2.1)
@@ -581,7 +582,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   (let ((file (ack-previous-property-value 'ack-file pos))
         (line (ack-previous-property-value 'ack-line pos))
         (offset (ack-visible-distance
-                 (1+ (previous-single-property-change pos 'ack-line)) pos))
+                 (previous-single-property-change pos 'ack-line) pos))
         buffer)
     (if force
         (or (and file
@@ -596,7 +597,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
       (with-current-buffer buffer
         (save-excursion
           (goto-line (string-to-number line))
-          (copy-marker (+ (point) offset)))))))
+          (copy-marker (+ (point) offset -1)))))))
 
 (defun ack-find-match (pos)
   "Jump to the match at POS."
@@ -640,26 +641,37 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defconst ack-font-lock-regexp-color-bg-begin "\\(\33\\[30;..m\\)")
 (defconst ack-font-lock-regexp-color-end "\\(\33\\[0m\\)")
 
+(defconst ack-font-lock-regexp-line
+  (concat "\\(" ack-font-lock-regexp-color-fg-begin "?\\)"
+          "\\([0-9]+\\)"
+          "\\(" ack-font-lock-regexp-color-end "?\\)"
+          "[:-]")
+  "Matches the line output from ack (with or without color).
+Color is used starting ack 1.94.")
+
 (defvar ack-font-lock-keywords
   `(("^--" . 'ack-separator)
     ;; file and line
     (,(concat "^" ack-font-lock-regexp-color-fg-begin
               "\\(.*?\\)" ack-font-lock-regexp-color-end
-              "[:-]\\([0-9]+\\)[:-]")
+              "[:-]" ack-font-lock-regexp-line)
      (1 '(face nil invisible t))
      (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
      (3 '(face nil invisible t))
-     (4 `(face ack-line ack-line ,(match-string-no-properties 4))))
+     (4 '(face nil invisible t))
+     (6 `(face ack-line ack-line ,(match-string-no-properties 6)))
+     (7 '(face nil invisible t) nil optional))
+    ;; lines
+    (,(concat "^" ack-font-lock-regexp-line)
+     (1 '(face nil invisible t))
+     (3 `(face ack-line ack-line ,(match-string-no-properties 3)))
+     (5 '(face nil invisible t) nil optional))
     ;; file
     (,(concat "^" ack-font-lock-regexp-color-fg-begin
               "\\(.*?\\)" ack-font-lock-regexp-color-end "$")
      (1 '(face nil invisible t))
      (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
      (3 '(face nil invisible t)))
-    ;; lines
-    ("^\\([0-9]+\\)[:-]"
-     (1 `(face ack-line
-          ack-line ,(match-string-no-properties 1))))
     ;; matches
     (,(concat ack-font-lock-regexp-color-bg-begin
               "\\(.*?\\)"
