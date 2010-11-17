@@ -636,10 +636,16 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (define-key keymap "p" 'ack-previous-match)
     keymap))
 
+(defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..m\\)")
+(defconst ack-font-lock-regexp-color-bg-begin "\\(\33\\[30;..m\\)")
+(defconst ack-font-lock-regexp-color-end "\\(\33\\[0m\\)")
+
 (defvar ack-font-lock-keywords
   `(("^--" . 'ack-separator)
     ;; file and maybe line
-    ("^\\(\33\\[1;..m\\)\\(.*?\\)\\(\33\\[0m\\)\\([:-]\\([0-9]+\\)[:-]\\)?"
+    (,(concat "^" ack-font-lock-regexp-color-fg-begin
+              "\\(.*?\\)" ack-font-lock-regexp-color-end
+              "\\([:-]\\([0-9]+\\)[:-]\\)?")
      (1 '(face nil invisible t))
      (2 `(face ack-file
           ack-file ,(match-string-no-properties 2)))
@@ -652,7 +658,9 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
      (1 `(face ack-line
           ack-line ,(match-string-no-properties 1))))
     ;; matches
-    ("\\(\33\\[30;..m\\)\\(.*?\\)\\(\33\\[0m\\)"
+    (,(concat ack-font-lock-regexp-color-bg-begin
+              "\\(.*?\\)"
+              ack-font-lock-regexp-color-end)
      (1 '(face nil invisible t))
      (0 `(face ack-match
           ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
