@@ -3,7 +3,7 @@
 ;; Copyright (C) 2009-2010 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x
@@ -47,6 +47,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2010-11-17 (0.2.2)
 ;;    Made changes for ack 1.92.
 ;;    Made `ack-guess-project-root' Windows friendly.
 ;;
