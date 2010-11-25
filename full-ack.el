@@ -27,7 +27,7 @@
 ;;
 ;; ack is a tool like grep, aimed at programmers with large trees of
 ;; heterogeneous source code.
-;; It is aailable at <http://betterthangrep.com/>.
+;; It is available at <http://betterthangrep.com/>.
 ;;
 ;; Add the following to your .emacs:
 ;;
