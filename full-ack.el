@@ -583,7 +583,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   (let ((file (ack-previous-property-value 'ack-file pos))
         (line (ack-previous-property-value 'ack-line pos))
         (offset (ack-visible-distance
-                 (previous-single-property-change pos 'ack-line) pos))
+                 (or (previous-single-property-change pos 'ack-line) 0)
+                 pos))
         buffer)
     (if force
         (or (and file
