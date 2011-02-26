@@ -420,9 +420,18 @@ This can be used in `ack-root-directory-functions'."
 (defvar ack-regexp-history nil
   "Regular expressions recently searched for with `ack'.")
 
+(defun ack-tag-default ()
+  (or (and transient-mark-mode mark-active
+	   (/= (point) (mark))
+	   (buffer-substring-no-properties (point) (mark)))
+      (funcall (or find-tag-default-function
+		   (get major-mode 'find-tag-default-function)
+		   'find-tag-default))
+      ""))
+
 (defsubst ack-read (regexp)
   (read-from-minibuffer (if regexp "ack pattern: " "ack literal search: ")
-                        nil nil nil
+                        (ack-tag-default) nil nil
                         (if regexp 'ack-regexp-history 'ack-literal-history)))
 
 (defun ack-read-dir ()
