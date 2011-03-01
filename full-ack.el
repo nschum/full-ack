@@ -706,4 +706,5 @@ Color is used starting ack 1.94.")
         ack-error-pos nil))
 
 (provide 'full-ack)
+(run-hooks 'ack-load-hook)
 ;;; full-ack.el ends here
