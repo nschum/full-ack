@@ -6,7 +6,7 @@
 ;; Version: 0.2.2
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
-;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x
+;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;
