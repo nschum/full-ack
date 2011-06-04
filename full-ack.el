@@ -620,8 +620,14 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (when buffer
       (with-current-buffer buffer
         (save-excursion
-          (goto-line (string-to-number line))
+          (ack--move-to-line (string-to-number line))
           (copy-marker (+ (point) offset -1)))))))
+
+(defsubst ack--move-to-line (line)
+  (save-restriction
+    (widen)
+    (goto-char (point-min))
+    (forward-line (1- line))))
 
 (defun ack-find-match (pos)
   "Jump to the match at POS."
