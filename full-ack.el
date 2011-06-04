@@ -47,6 +47,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Added default value for search.
+;;
 ;; 2010-11-17 (0.2.2)
 ;;    Made changes for ack 1.92.
 ;;    Made `ack-guess-project-root' Windows friendly.
@@ -420,10 +422,29 @@ This can be used in `ack-root-directory-functions'."
 (defvar ack-regexp-history nil
   "Regular expressions recently searched for with `ack'.")
 
-(defsubst ack-read (regexp)
-  (read-from-minibuffer (if regexp "ack pattern: " "ack literal search: ")
-                        nil nil nil
-                        (if regexp 'ack-regexp-history 'ack-literal-history)))
+(defun ack--read (regexp)
+  (let ((default (ack--default-for-read))
+        (type (if regexp "pattern" "literal"))
+        (history-var (if regexp 'ack-regexp-history 'ack-literal-history)))
+    (read-string (if default
+                     (format "ack %s search (default %s): " type default)
+                   (format "ack %s search: " type))
+                 (ack--initial-contents-for-read)
+                 history-var
+                 default)))
+
+(defsubst ack--initial-contents-for-read ()
+  (when (ack--use-region-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
+
+(defsubst ack--default-for-read ()
+  (unless (ack--use-region-p)
+    (thing-at-point 'symbol)))
+
+(defsubst ack--use-region-p ()
+  (or (and (fboundp 'use-region-p) (use-region-p))
+      (and transient-mark-mode mark-active
+           (> (region-end) (region-beginning)))))
 
 (defun ack-read-dir ()
   (let ((dir (run-hook-with-args-until-success 'ack-root-directory-functions)))
@@ -441,7 +462,7 @@ This can be used in `ack-root-directory-functions'."
 (defun ack-interactive ()
   "Return the (interactive) arguments for `ack' and `ack-same'"
   (let ((regexp (ack-xor current-prefix-arg ack-search-regexp)))
-    (list (ack-read regexp)
+    (list (ack--read regexp)
           regexp
           (ack-read-dir))))
 
