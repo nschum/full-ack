@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 ;;; full-ack.el --- a front-end for ack
 ;;
-;; Copyright (C) 2009-2010 Nikolaj Schumacher
+;; Copyright (C) 2009-2011 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
 ;; Version: 0.2.2
