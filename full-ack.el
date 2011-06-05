@@ -350,7 +350,7 @@ This can be used in `ack-root-directory-functions'."
   (when (processp ack-process)
     (delete-process ack-process)))
 
-(defsubst ack-option (name enabled)
+(defun ack-option (name enabled)
   (format "--%s%s" (if enabled "" "no") name))
 
 (defun ack-arguments-from-options (regexp)
@@ -434,15 +434,15 @@ This can be used in `ack-root-directory-functions'."
                  history-var
                  default)))
 
-(defsubst ack--initial-contents-for-read ()
+(defun ack--initial-contents-for-read ()
   (when (ack--use-region-p)
     (buffer-substring-no-properties (region-beginning) (region-end))))
 
-(defsubst ack--default-for-read ()
+(defun ack--default-for-read ()
   (unless (ack--use-region-p)
     (thing-at-point 'symbol)))
 
-(defsubst ack--use-region-p ()
+(defun ack--use-region-p ()
   (or (and (fboundp 'use-region-p) (use-region-p))
       (and transient-mark-mode mark-active
            (> (region-end) (region-beginning)))))
@@ -457,7 +457,7 @@ This can be used in `ack-root-directory-functions'."
           (and buffer-file-name (file-name-directory buffer-file-name))
           default-directory))))
 
-(defsubst ack-xor (a b)
+(defun ack-xor (a b)
   (if a (not b) b))
 
 (defun ack-interactive ()
@@ -623,7 +623,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
           (ack--move-to-line (string-to-number line))
           (copy-marker (+ (point) offset -1)))))))
 
-(defsubst ack--move-to-line (line)
+(defun ack--move-to-line (line)
   (save-restriction
     (widen)
     (goto-char (point-min))
