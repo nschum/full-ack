@@ -48,6 +48,7 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Added `ack-again' (bound to "g" in search buffers).
 ;;    Added default value for search.
 ;;
 ;; 2010-11-17 (0.2.2)
@@ -307,8 +308,9 @@ This can be used in `ack-root-directory-functions'."
 ;;; process ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar ack-buffer-name "*ack*")
-
 (defvar ack-process nil)
+
+(defvar ack-buffer--rerun-args nil)
 
 (defun ack-count-matches ()
   "Count the matches printed by `ack' in the current buffer."
@@ -377,13 +379,16 @@ This can be used in `ack-root-directory-functions'."
                                  arguments)))
   (let ((buffer (get-buffer-create ack-buffer-name))
         (inhibit-read-only t)
-        (default-directory directory))
-    (setq next-error-last-buffer buffer)
+        (default-directory directory)
+        (rerun-args (cons directory (cons regexp arguments))))
+    (setq next-error-last-buffer buffer
+          ack-buffer--rerun-args rerun-args)
     (with-current-buffer buffer
       (erase-buffer)
       (ack-mode)
       (setq buffer-read-only t
             default-directory directory)
+      (set (make-local-variable 'ack-buffer--rerun-args) rerun-args)
       (font-lock-fontify-buffer)
       (when (eq ack-display-buffer t)
         (display-buffer (current-buffer))))
@@ -508,7 +513,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (require 'iswitchb)
     (with-no-warnings
       (let ((iswitchb-make-buflist-hook
-             (lambda () (setq iswitchb-temp-buflist choices))))
+             `(lambda () (setq iswitchb-temp-buflist ',choices))))
         (iswitchb-read-buffer prompt nil t)))))
 
 ;;;###autoload
@@ -527,6 +532,21 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   (find-file (expand-file-name (ack-read-file "Find file: "
                                               (ack-list-files directory))
                                directory)))
+
+;;; run again ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun ack-again ()
+  "Run the last ack search in the same directory."
+  (interactive)
+  (if ack-buffer--rerun-args
+      (let ((ack-buffer-name (ack--again-buffer-name)))
+        (apply 'ack-run ack-buffer--rerun-args))
+    (call-interactively 'ack)))
+
+(defun ack--again-buffer-name ()
+  (if (local-variable-p 'ack-buffer--rerun-args)
+      (buffer-name)
+    ack-buffer-name))
 
 ;;; text utilities ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -665,6 +685,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (define-key keymap "\C-m" 'ack-find-match)
     (define-key keymap "n" 'ack-next-match)
     (define-key keymap "p" 'ack-previous-match)
+    (define-key keymap "g" 'ack-again)
+    (define-key keymap "r" 'ack-again)
     keymap))
 
 (defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..m\\)")
