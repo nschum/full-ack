@@ -689,7 +689,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (define-key keymap "r" 'ack-again)
     keymap))
 
-(defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..m\\)")
+(defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..?m\\)")
 (defconst ack-font-lock-regexp-color-bg-begin "\\(\33\\[30;..m\\)")
 (defconst ack-font-lock-regexp-color-end "\\(\33\\[0m\\)")
 
