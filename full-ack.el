@@ -364,7 +364,8 @@ This can be used in `ack-root-directory-functions'."
       (push "-i" arguments))
     (unless regexp
       (push "--literal" arguments))
-    (push (format "--context=%d" ack-context) arguments)
+    (when (and ack-context (/= ack-context 0))
+      (push (format "--context=%d" ack-context) arguments))
     arguments))
 
 (defun ack-run (directory regexp &rest arguments)
