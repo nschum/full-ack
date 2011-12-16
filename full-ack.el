@@ -4,7 +4,7 @@
 ;; Copyright (C) 2009-2011 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -48,6 +48,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2011-12-16 (0.2.3)
 ;;    Added `ack-again' (bound to "g" in search buffers).
 ;;    Added default value for search.
 ;;
