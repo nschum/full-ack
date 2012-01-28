@@ -1,5 +1,4 @@
-;;; -*- lexical-binding: t -*-
-;;; full-ack.el --- a front-end for ack
+;;; full-ack.el --- a front-end for ack -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2009-2011 Nikolaj Schumacher
 ;;
