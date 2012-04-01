@@ -629,6 +629,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defun ack-next-file (pos arg)
   "Move to the next file in the *ack* buffer."
   (interactive "d\np")
+  ;; Workaround for problem at the begining of the buffer.
+  (when (bobp) (incf arg))
   (ack-next-marker pos arg 'ack-file "file"))
 
 (defun ack-previous-file (pos arg)
