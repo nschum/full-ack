@@ -48,6 +48,8 @@
 ;;
 ;;; Change Log:
 ;;
+;;    Added `ack-next-file` and `ack-previous-file`.
+;;
 ;; 2011-12-16 (0.2.3)
 ;;    Added `ack-again' (bound to "g" in search buffers).
 ;;    Added default value for search.
@@ -615,18 +617,22 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
   pos)
 
 (defun ack-next-match (pos arg)
+  "Move to the next match in the *ack* buffer."
   (interactive "d\np")
   (ack-next-marker pos arg 'ack-match "match"))
 
 (defun ack-previous-match (pos arg)
+  "Move to the previous match in the *ack* buffer."
   (interactive "d\np")
   (ack-previous-marker pos arg 'ack-match "match"))
 
 (defun ack-next-file (pos arg)
+  "Move to the next file in the *ack* buffer."
   (interactive "d\np")
   (ack-next-marker pos arg 'ack-file "file"))
 
 (defun ack-previous-file (pos arg)
+  "Move to the previous file in the *ack* buffer."
   (interactive "d\np")
   (ack-previous-marker pos arg 'ack-file "file"))
 
