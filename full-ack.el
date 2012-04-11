@@ -699,7 +699,8 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
                   (marker-buffer marker))
       (compilation-goto-locus msg marker end)
       (set-marker msg nil)
-      (set-marker end nil))))
+      (set-marker end nil)
+      (delete-other-windows))))
 
 ;;; ack-mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
