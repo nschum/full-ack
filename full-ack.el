@@ -333,7 +333,7 @@ This can be used in `ack-root-directory-functions'."
         (if (> c 0)
             (when (eq ack-display-buffer 'after)
               (display-buffer (current-buffer)))
-          (kill-buffer (current-buffer)))
+          (kill-buffer-and-window))
         (message "Ack finished with %d match%s" c (if (eq c 1) "" "es"))))))
 
 (defun ack-filter (proc output)
