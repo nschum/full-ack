@@ -714,6 +714,7 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
     (define-key keymap "\M-p" 'ack-previous-file)
     (define-key keymap "g" 'ack-again)
     (define-key keymap "r" 'ack-again)
+    (define-key keymap "q" 'quit-window)
     keymap))
 
 (defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..?m\\)")
