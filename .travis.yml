@@ -1,3 +1,5 @@
+# https://github.com/rolandwalker/emacs-travis
+
 language: emacs-lisp
 
 env:
@@ -27,24 +29,10 @@ install:
         sudo apt-get install -qq emacs-snapshot &&
         sudo apt-get install -qq emacs-snapshot-el emacs-snapshot-gtk;
     fi
+  - mkdir -p lib && curl https://raw.github.com/nschum/elisp-lint/stable/elisp-lint.el > lib/elisp-lint.el
 
 script:
-  $EMACS --version && $EMACS -Q --batch -l bytecomp --eval "
-  (let ((byte-compile-error-on-warn t)
-        (byte-compile-warnings t)
-        (result t))
-    (while command-line-args-left
-      (setq result (and (byte-compile-file (car command-line-args-left)) result))
-      (when (>= emacs-major-version 24)
-        (require 'package)
-        (with-temp-buffer
-          (insert-file-contents-literally (car command-line-args-left))
-          (condition-case err
-              (package-buffer-info)
-            (error (message \"%s\" (error-message-string err)) (setq result nil))))
-      (pop command-line-args-left))
-    (kill-emacs (unless result 1))))
-  " *.el
+  $EMACS --version && $EMACS -Q --batch -l lib/elisp-lint.el -f elisp-lint-files-batch *.el
 
 notifications:
   email: false
