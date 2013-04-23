@@ -342,12 +342,12 @@ This can be used in `ack-root-directory-functions'."
         (inhibit-read-only t)
         beg)
     (if (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (save-excursion
-          (goto-char (setq beg (point-max)))
-          (insert output)
-          ;; Error properties are done by font-lock.
-          (font-lock-fontify-region beg (point-max))))
+        (with-current-buffer buffer
+          (save-excursion
+            (goto-char (setq beg (point-max)))
+            (insert output)
+            ;; Error properties are done by font-lock.
+            (font-lock-fontify-region beg (point-max))))
       (ack-abort))))
 
 (defun ack-abort ()
@@ -757,10 +757,10 @@ Color is used starting ack 1.94.")
               ack-font-lock-regexp-color-end)
      (1 '(face nil invisible t))
      (0 `(face ack-match
-          ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
-          ack-match t
-          mouse-face highlight
-          follow-link t))
+               ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
+               ack-match t
+               mouse-face highlight
+               follow-link t))
      (3 '(face nil invisible t)))
     ;; noise
     ("\\(\33\\[\\(0m\\|K\\)\\)"
