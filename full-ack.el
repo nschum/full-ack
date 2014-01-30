@@ -1,10 +1,10 @@
 ;;; full-ack.el --- a front-end for ack
 ;;; -*- lexical-binding: t -*-
 ;;
-;; Copyright (C) 2009-2011 Nikolaj Schumacher
+;; Copyright (C) 2009-2012 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 0.2.3
+;; Version: 1.0
 ;; Keywords: tools, matching
 ;; URL: http://nschum.de/src/emacs/full-ack/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -48,6 +48,7 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2013-03-26 (1.0)
 ;;    Added `ack-next-file` and `ack-previous-file`.
 ;;
 ;; 2011-12-16 (0.2.3)
@@ -341,12 +342,12 @@ This can be used in `ack-root-directory-functions'."
         (inhibit-read-only t)
         beg)
     (if (buffer-live-p buffer)
-      (with-current-buffer buffer
-        (save-excursion
-          (goto-char (setq beg (point-max)))
-          (insert output)
-          ;; Error properties are done by font-lock.
-          (font-lock-fontify-region beg (point-max))))
+        (with-current-buffer buffer
+          (save-excursion
+            (goto-char (setq beg (point-max)))
+            (insert output)
+            ;; Error properties are done by font-lock.
+            (font-lock-fontify-region beg (point-max))))
       (ack-abort))))
 
 (defun ack-abort ()
@@ -757,10 +758,10 @@ Color is used starting ack 1.94.")
               ack-font-lock-regexp-color-end)
      (1 '(face nil invisible t))
      (0 `(face ack-match
-          ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
-          ack-match t
-          mouse-face highlight
-          follow-link t))
+               ack-marker ,(ack-create-marker (match-beginning 2) (match-end 2))
+               ack-match t
+               mouse-face highlight
+               follow-link t))
      (3 '(face nil invisible t)))
     ;; noise
     ("\\(\33\\[\\(0m\\|K\\)\\)"
