@@ -183,6 +183,13 @@ nil, the directory is never confirmed."
                  (const :tag "Don't Prompt when guessed " unless-guessed)
                  (const :tag "Prompt" t)))
 
+;;; hooks
+(defcustom ack-before-search-starts nil
+  "Functions called right before start of search.")
+
+(defcustom ack-after-search-completed nil
+  "Functions called when search has completed.")
+
 ;;; faces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defface ack-separator
@@ -335,7 +342,8 @@ This can be used in `ack-root-directory-functions'."
             (when (eq ack-display-buffer 'after)
               (display-buffer (current-buffer)))
           (kill-buffer (current-buffer)))
-        (message "Ack finished with %d match%s" c (if (eq c 1) "" "es"))))))
+        (message "Ack finished with %d match%s" c (if (eq c 1) "" "es")))))
+  (run-hooks 'ack-after-search-completed))
 
 (defun ack-filter (proc output)
   (let ((buffer (process-buffer proc))
@@ -397,6 +405,7 @@ This can be used in `ack-root-directory-functions'."
       (font-lock-fontify-buffer)
       (when (eq ack-display-buffer t)
         (display-buffer (current-buffer))))
+    (run-hooks 'ack-before-search-starts)
     (setq ack-process
           (apply 'start-process "ack" buffer ack-executable arguments))
     (set-process-sentinel ack-process 'ack-sentinel)
