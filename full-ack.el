@@ -729,9 +729,11 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..?m\\)")
 (defconst ack-font-lock-regexp-color-bg-begin "\\(\33\\[30;..m\\)")
 (defconst ack-font-lock-regexp-color-end "\\(\33\\[0m\\)")
+(defconst ack-font-lock-regexp-line-number-color "\\(\33\\[1;33m\\)")
+(defconst ack-font-lock-regexp-file-name-color "\\(\33\\[1;32m\\)")
 
 (defconst ack-font-lock-regexp-line
-  (concat "\\(" ack-font-lock-regexp-color-fg-begin "?\\)"
+  (concat "\\(" ack-font-lock-regexp-line-number-color "?\\)"
           "\\([0-9]+\\)"
           "\\(" ack-font-lock-regexp-color-end "?\\)"
           "[:-]")
@@ -756,7 +758,7 @@ Color is used starting ack 1.94.")
      (3 `(face ack-line ack-line ,(match-string-no-properties 3)))
      (5 '(face nil invisible t) nil optional))
     ;; file
-    (,(concat "^" ack-font-lock-regexp-color-fg-begin
+    (,(concat "^" ack-font-lock-regexp-file-name-color
               "\\(.*?\\)" ack-font-lock-regexp-color-end "$")
      (1 '(face nil invisible t))
      (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
