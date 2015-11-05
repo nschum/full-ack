@@ -183,6 +183,13 @@ nil, the directory is never confirmed."
                  (const :tag "Don't Prompt when guessed " unless-guessed)
                  (const :tag "Prompt" t)))
 
+;;; hooks
+(defcustom ack-before-search-starts nil
+  "Functions called right before start of search.")
+
+(defcustom ack-after-search-completed nil
+  "Functions called when search has completed.")
+
 ;;; faces ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defface ack-separator
@@ -335,7 +342,8 @@ This can be used in `ack-root-directory-functions'."
             (when (eq ack-display-buffer 'after)
               (display-buffer (current-buffer)))
           (kill-buffer (current-buffer)))
-        (message "Ack finished with %d match%s" c (if (eq c 1) "" "es"))))))
+        (message "Ack finished with %d match%s" c (if (eq c 1) "" "es")))))
+  (run-hooks 'ack-after-search-completed))
 
 (defun ack-filter (proc output)
   (let ((buffer (process-buffer proc))
@@ -397,6 +405,7 @@ This can be used in `ack-root-directory-functions'."
       (font-lock-fontify-buffer)
       (when (eq ack-display-buffer t)
         (display-buffer (current-buffer))))
+    (run-hooks 'ack-before-search-starts)
     (setq ack-process
           (apply 'start-process "ack" buffer ack-executable arguments))
     (set-process-sentinel ack-process 'ack-sentinel)
@@ -450,7 +459,9 @@ This can be used in `ack-root-directory-functions'."
 
 (defun ack--default-for-read ()
   (unless (ack--use-region-p)
-    (thing-at-point 'symbol)))
+    (let ((default (thing-at-point 'symbol)))
+      (set-text-properties 0 (length default) nil default)
+      default)))
 
 (defun ack--use-region-p ()
   (or (and (fboundp 'use-region-p) (use-region-p))
@@ -720,9 +731,11 @@ DIRECTORY is the root directory.  If called interactively, it is determined by
 (defconst ack-font-lock-regexp-color-fg-begin "\\(\33\\[1;..?m\\)")
 (defconst ack-font-lock-regexp-color-bg-begin "\\(\33\\[30;..m\\)")
 (defconst ack-font-lock-regexp-color-end "\\(\33\\[0m\\)")
+(defconst ack-font-lock-regexp-line-number-color "\\(\33\\[1;33m\\)")
+(defconst ack-font-lock-regexp-file-name-color "\\(\33\\[1;32m\\)")
 
 (defconst ack-font-lock-regexp-line
-  (concat "\\(" ack-font-lock-regexp-color-fg-begin "?\\)"
+  (concat "\\(" ack-font-lock-regexp-line-number-color "?\\)"
           "\\([0-9]+\\)"
           "\\(" ack-font-lock-regexp-color-end "?\\)"
           "[:-]")
@@ -747,7 +760,7 @@ Color is used starting ack 1.94.")
      (3 `(face ack-line ack-line ,(match-string-no-properties 3)))
      (5 '(face nil invisible t) nil optional))
     ;; file
-    (,(concat "^" ack-font-lock-regexp-color-fg-begin
+    (,(concat "^" ack-font-lock-regexp-file-name-color
               "\\(.*?\\)" ack-font-lock-regexp-color-end "$")
      (1 '(face nil invisible t))
      (2 `(face ack-file ack-file ,(match-string-no-properties 2)))
