@@ -459,7 +459,9 @@ This can be used in `ack-root-directory-functions'."
 
 (defun ack--default-for-read ()
   (unless (ack--use-region-p)
-    (thing-at-point 'symbol)))
+    (let ((default (thing-at-point 'symbol)))
+      (set-text-properties 0 (length default) nil default)
+      default)))
 
 (defun ack--use-region-p ()
   (or (and (fboundp 'use-region-p) (use-region-p))
